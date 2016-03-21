@@ -14,7 +14,10 @@ namespace MasterDetail.Models.ModelConfigurations
                 .HasColumnAnnotation(IndexAnnotation.AnnotationName,
                     new IndexAnnotation(new IndexAttribute("AK_Customer_AccountNumber") { IsUnique = true }));
 
-            Property(customer => customer.CompanyName).HasMaxLength(30).IsRequired();
+            Property(customer => customer.CompanyName)
+                .HasMaxLength(30)
+                .IsRequired()
+                .HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("AK_Customer_CompanyName") { IsUnique = true }));
             Property(customer => customer.Address).HasMaxLength(30).IsRequired();
             Property(customer => customer.City).HasMaxLength(15).IsRequired();
             Property(customer => customer.State).HasMaxLength(2).IsRequired();

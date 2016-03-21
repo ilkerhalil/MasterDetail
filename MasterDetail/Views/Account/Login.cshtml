@@ -1,5 +1,6 @@
 ﻿@using MasterDetail.Models
-@model LoginViewModel
+@using MasterDetail.ViewModels
+@model MasterDetail.ViewModels.LoginViewModel
 @{
     ViewBag.Title = "Log in";
 }
@@ -17,7 +18,7 @@
                 <div class="form-group">
                     @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
                     <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control",@autofocus= "autofocus" })
                         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                     </div>
                 </div>

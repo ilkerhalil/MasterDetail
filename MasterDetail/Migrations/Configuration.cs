@@ -1,4 +1,8 @@
+using System.IO;
+using System.Web.Security;
 using MasterDetail.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace MasterDetail.Migrations
 {
@@ -15,6 +19,33 @@ namespace MasterDetail.Migrations
 
         protected override void Seed(MasterDetail.Models.ApplicationDbContext context)
         {
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            userManager.UserValidator = new UserValidator<ApplicationUser>(userManager) { AllowOnlyAlphanumericUserNames = false };
+
+            var roleManager = new RoleManager<ApplicationRole>(new RoleStore<ApplicationRole>(new ApplicationDbContext()));
+
+            var name = "pluralsightnimda@gmail.com";
+            var password = "Pluralsight#1";
+            var firstName = "Admin";
+            var roleName = "Admin";
+            var role = roleManager.FindByName(roleName);
+            if (role == null)
+            {
+                role = new ApplicationRole(roleName);
+                var roleResult = roleManager.Create(role);
+            }
+            var user = userManager.FindByName(name);
+            if (user == null)
+            {
+                user = new ApplicationUser() { UserName = name, Email = name, FirstName = firstName };
+                var result = userManager.Create(user, password);
+                result = userManager.SetLockoutEnabled(user.Id, false);
+            }
+            var rolesForUser = userManager.GetRoles(user.Id);
+            if (!rolesForUser.Contains(role.Name))
+            {
+                var result = userManager.AddToRole(user.Id, role.Name);
+            }
 
             var accountNumber = "ABC123";
             context.Customers.AddOrUpdate(cust => cust.AccountNumber,

@@ -18,7 +18,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -177,13 +177,20 @@
     <Compile Include="Migrations\201603210656039_Initial.Designer.cs">
       <DependentUpon>201603210656039_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603211325088_identity.cs" />
+    <Compile Include="Migrations\201603211325088_identity.Designer.cs">
+      <DependentUpon>201603211325088_identity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ApplicationRole.cs" />
+    <Compile Include="ViewModels\AccountViewModels.cs" />
+    <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\ModelConfigurations\ApplicationUserConfiguration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\ModelConfigurations\CategoryConfiguration.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\ModelConfigurations\CustomerConfiguration.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\InventoryItem.cs" />
     <Compile Include="Models\ModelConfigurations\InventoryItemConfiguration.cs" />
     <Compile Include="Models\Labor.cs" />
@@ -266,11 +273,12 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Account\CheckYourEmail.cshtml" />
+    <None Include="Views\Account\UnconfirmedAccount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="DataLayer\" />
-    <Folder Include="ViewModels\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -279,6 +287,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201603210656039_Initial.resx">
       <DependentUpon>201603210656039_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603211325088_identity.resx">
+      <DependentUpon>201603211325088_identity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -299,7 +310,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>61375</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:61375/</IISUrl>
+          <IISUrl>https://localhost:44300/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

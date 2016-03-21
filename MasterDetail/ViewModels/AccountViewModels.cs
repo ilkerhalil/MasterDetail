@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace MasterDetail.Models
+namespace MasterDetail.ViewModels
 {
     public class ExternalLoginConfirmationViewModel
     {
@@ -79,6 +79,10 @@ namespace MasterDetail.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+
+        public string FirstName { get; set; }
+
     }
 
     public class ResetPasswordViewModel
