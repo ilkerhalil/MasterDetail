@@ -2,16 +2,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration;
 
-namespace MasterDetail.Models
+namespace MasterDetail.Models.ModelConfigurations
 {
     public class CustomerConfiguration : EntityTypeConfiguration<Customer>
     {
         public CustomerConfiguration()
         {
-            Property(customer => customer.AccountName)
+            Property(customer => customer.AccountNumber)
                 .HasMaxLength(8)
                 .IsRequired()
-                .HasColumnAnnotation("Index",
+                .HasColumnAnnotation(IndexAnnotation.AnnotationName,
                     new IndexAnnotation(new IndexAttribute("AK_Customer_AccountNumber") { IsUnique = true }));
 
             Property(customer => customer.CompanyName).HasMaxLength(30).IsRequired();

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 
-namespace MasterDetail.Models
+namespace MasterDetail.Models.ModelConfigurations
 {
     public class WorkOrderConfiguration: EntityTypeConfiguration<WorkOrder>
     {

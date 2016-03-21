@@ -2,7 +2,7 @@
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration;
 
-namespace MasterDetail.Models
+namespace MasterDetail.Models.ModelConfigurations
 {
     public class PartConfiguration : EntityTypeConfiguration<Part>
     {
@@ -11,12 +11,12 @@ namespace MasterDetail.Models
             Property(part => part.InventoryItemCode)
                 .HasMaxLength(15)
                 .IsRequired()
-                .HasColumnAnnotation("Index",
+                .HasColumnAnnotation(IndexAnnotation.AnnotationName,
                     new IndexAnnotation(new IndexAttribute("AK_Part", 2) { IsUnique = true }));
 
 
             Property(part => part.WorkOrderId)
-                  .HasColumnAnnotation("Index1",
+                  .HasColumnAnnotation(IndexAnnotation.AnnotationName,
                     new IndexAnnotation(new IndexAttribute("AK_Part", 1) { IsUnique = true }));
 
             Property(part => part.InventoryItemName)

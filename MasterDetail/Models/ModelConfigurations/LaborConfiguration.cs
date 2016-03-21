@@ -2,7 +2,7 @@
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration;
 
-namespace MasterDetail.Models
+namespace MasterDetail.Models.ModelConfigurations
 {
     public class LaborConfiguration : EntityTypeConfiguration<Labor>
     {
@@ -11,10 +11,10 @@ namespace MasterDetail.Models
             Property(labor => labor.ServiceItemCode)
                 .HasMaxLength(15)
                 .IsRequired()
-                .HasColumnAnnotation("Index",
+                .HasColumnAnnotation(IndexAnnotation.AnnotationName,
                     new IndexAnnotation(new IndexAttribute("AK_Labor", 2) { IsUnique = true }));
             Property(labor => labor.WorkOrderId)
-                            .HasColumnAnnotation("Index",
+                            .HasColumnAnnotation(IndexAnnotation.AnnotationName,
                                 new IndexAnnotation(new IndexAttribute("AK_Labor", 1) { IsUnique = true }));
 
             Property(labor => labor.ServiceItemName)
