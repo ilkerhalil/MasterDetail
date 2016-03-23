@@ -6,7 +6,7 @@ namespace MasterDetail.Models.ModelConfigurations
     {
         public ApplicationUserConfiguration()
         {
-            Property(user => user.FirstName).HasMaxLength(15).IsOptional();
+            Property(user => user.FirstName).HasMaxLength(15).IsRequired();
         }
     }
 }

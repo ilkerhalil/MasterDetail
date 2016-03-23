@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -156,25 +157,30 @@ namespace MasterDetail.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+            var user = new ApplicationUser
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                UserName = model.Email,
+                Email = model.Email,
+                FirstName = model.FirstName
+            };
+            var result = await UserManager.CreateAsync(user, model.Password);
 
-                    //// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+            if (result.Succeeded)
+            {
+                await UserManager.SetTwoFactorEnabledAsync(user.Id, true);
+                //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
-                    await UserManager.SendEmailAsync(user.Id, "Confirm your account",
-                        "Please confirm your account by clicking <a href=\"" + callbackUrl + "\"here</a>");
-                    return View("CheckYourEmail");
-                }
-                AddErrors(result);
+                //// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                await UserManager.SendEmailAsync(user.Id, "Confirm your account",
+                    "Please confirm your account by clicking <a href=\"" + callbackUrl + "\"here</a>");
+                return View("CheckYourEmail");
             }
+            AddErrors(result);
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -189,8 +195,19 @@ namespace MasterDetail.Controllers
             {
                 return View("Error");
             }
-            var result = await UserManager.ConfirmEmailAsync(userId, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+
+            try
+            {
+                var result = await UserManager.ConfirmEmailAsync(userId, code);
+                return View("ConfirmEmail");
+
+            }
+            catch (InvalidOperationException invalidOperationException)
+            {
+                return View("Error");
+
+            }
+            //return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
         //
@@ -219,10 +236,10 @@ namespace MasterDetail.Controllers
 
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
-                // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-                // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
             // If we got this far, something failed, redisplay form

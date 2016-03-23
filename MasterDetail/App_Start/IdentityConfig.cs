@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using MasterDetail.Models;
+using Twilio;
 
 namespace MasterDetail
 {
@@ -19,7 +20,7 @@ namespace MasterDetail
             // Plug in your email service here to send an email.
             const string userName = "";
             const string password = "";
-            const string from = "";
+            const string from = "Your MasterDetail site Register Request";
             using (var smtpClient = new SmtpClient())
             {
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -41,6 +42,12 @@ namespace MasterDetail
         public Task SendAsync(IdentityMessage message)
         {
             // Plug in your SMS service here to send a text message.
+            const string accountSid = "";
+            const string authToken = "";
+            const string phoneNumber = "";
+            var twilioRestClient = new TwilioRestClient(accountSid, authToken);
+            var sendMessage = twilioRestClient.SendMessage(phoneNumber, message.Destination, message.Body);
+            
             return Task.FromResult(0);
         }
     }
