@@ -1,5 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -32,9 +32,9 @@ namespace MasterDetail.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -61,6 +61,7 @@ namespace MasterDetail.Controllers
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                : message == ManageMessageId.ChangeEmailSuccess ? "Check your email"
                 : "";
 
             var userId = User.Identity.GetUserId();
@@ -333,7 +334,7 @@ namespace MasterDetail.Controllers
             base.Dispose(disposing);
         }
 
-#region Helpers
+        #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -356,21 +357,13 @@ namespace MasterDetail.Controllers
         private bool HasPassword()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
-            if (user != null)
-            {
-                return user.PasswordHash != null;
-            }
-            return false;
+            return user?.PasswordHash != null;
         }
 
         private bool HasPhoneNumber()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
-            if (user != null)
-            {
-                return user.PhoneNumber != null;
-            }
-            return false;
+            return user?.PhoneNumber != null;
         }
 
         public enum ManageMessageId
@@ -381,9 +374,74 @@ namespace MasterDetail.Controllers
             SetPasswordSuccess,
             RemoveLoginSuccess,
             RemovePhoneSuccess,
-            Error
+            Error,
+            ChangeProfileSuccess,
+            ChangeEmailSuccess
+
         }
 
-#endregion
+        #endregion
+
+        public async Task<ActionResult> ChangeProfile()
+        {
+            var applicationUser = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            if (applicationUser != null)
+            {
+                return View(applicationUser);
+            }
+            return RedirectToAction("Index", new { Message = ManageMessageId.Error });
+        }
+
+        public async Task<ActionResult> ChangeProfile(ApplicationUser applicationUser)
+        {
+            var retrievedApplicationUser = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            retrievedApplicationUser.FirstName = applicationUser.FirstName;
+            retrievedApplicationUser.LastName = applicationUser.LastName;
+            retrievedApplicationUser.Address = applicationUser.Address;
+            retrievedApplicationUser.City = applicationUser.City;
+            retrievedApplicationUser.State = applicationUser.State;
+            retrievedApplicationUser.ZipCode = applicationUser.ZipCode;
+
+            var result = await UserManager.UpdateAsync(retrievedApplicationUser);
+
+            if (result.Succeeded)
+            {
+                if (retrievedApplicationUser.Email == applicationUser.Email)
+                    return RedirectToAction("Index", new {Message = ManageMessageId.Error});
+                var previousUserName = retrievedApplicationUser.UserName;
+                retrievedApplicationUser.UserName = applicationUser.Email;
+                result = await UserManager.UpdateAsync(retrievedApplicationUser);
+                if (result.Succeeded)
+                {
+                    result = await UserManager.SetEmailAsync(retrievedApplicationUser.Id, applicationUser.Email);
+                    if (result.Succeeded)
+                    {
+                        var code =
+                            await UserManager.GenerateEmailConfirmationTokenAsync(retrievedApplicationUser.Id);
+                        var callbackUrl = Url.Action("ConfirmEmail", "Account",
+                            new { userId = retrievedApplicationUser.Id, code = code }, Request.Url.Scheme);
+                        await
+                            UserManager.SendEmailAsync(retrievedApplicationUser.Id, "Confirm your accout",
+                                "Please confirm your accout by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    }
+                    else
+                    {
+                        retrievedApplicationUser.UserName = previousUserName;
+                        result = await UserManager.UpdateAsync(retrievedApplicationUser);
+                    }
+                }
+                else
+                {
+                    retrievedApplicationUser.UserName = previousUserName;
+                    result = await UserManager.UpdateAsync(retrievedApplicationUser);
+                }
+            }
+            else
+            {
+            }
+
+            return RedirectToAction("Index", new { Message = ManageMessageId.Error });
+        }
     }
 }

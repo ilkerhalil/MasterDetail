@@ -83,7 +83,7 @@ namespace MasterDetail.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: true);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -162,28 +162,47 @@ namespace MasterDetail.Controllers
             {
                 UserName = model.Email,
                 Email = model.Email,
-                FirstName = model.FirstName
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Address = model.Address,
+                City = model.City,
+                State = model.State,
+                ZipCode = model.ZipCode,
             };
             var result = await UserManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
                 await UserManager.SetTwoFactorEnabledAsync(user.Id, true);
-                //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-                //// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                await UserManager.SendEmailAsync(user.Id, "Confirm your account",
-                    "Please confirm your account by clicking <a href=\"" + callbackUrl + "\"here</a>");
-                return View("CheckYourEmail");
+                return await GenerateEmailConfirmation(user);
             }
             AddErrors(result);
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> RegenerateEmailConfiguration(string email)
+        {
+            var user = await UserManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                return RedirectToAction("GenerateEmailConfirmation", user);
+            }
+            return View("Login");
+        }
+
+
+        [AllowAnonymous]
+        public async Task<ActionResult> GenerateEmailConfirmation(ApplicationUser applicationUser)
+        {
+
+            var code = await UserManager.GenerateEmailConfirmationTokenAsync(applicationUser.Id);
+            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = applicationUser.Id, code = code }, protocol: Request.Url.Scheme);
+            await UserManager.SendEmailAsync(applicationUser.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+            return View("CheckYourEmail");
         }
 
         //
@@ -392,7 +411,13 @@ namespace MasterDetail.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var firstName = info.ExternalIdentity.Claims.First(claim => claim.Type.Contains("givenname")).Value ?? string.Empty;
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = firstName.Substring(0, Math.Min(firstName.Length, 15))
+                };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -506,5 +531,11 @@ namespace MasterDetail.Controllers
             }
         }
         #endregion
+
+        public ActionResult RegenerateEmailConfiguration()
+        {
+
+            return View();
+        }
     }
 }

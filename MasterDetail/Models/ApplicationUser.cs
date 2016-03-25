@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Security.AccessControl;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -17,6 +18,16 @@ namespace MasterDetail.Models
         }
 
         public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Address { get; set; }
+
+        public string City { get; set; }
+
+        public string State { get; set; }
+
+        public string ZipCode { get; set; }
 
     }
 }

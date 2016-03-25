@@ -193,6 +193,10 @@
     <Compile Include="Migrations\201603230700289_FirstNameRequired.Designer.cs">
       <DependentUpon>201603230700289_FirstNameRequired.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603241329373_UserAddress.cs" />
+    <Compile Include="Migrations\201603241329373_UserAddress.Designer.cs">
+      <DependentUpon>201603241329373_UserAddress.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApplicationRole.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
@@ -286,7 +290,9 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Account\CheckYourEmail.cshtml" />
+    <None Include="Views\Account\RegenerateEmailConfiguration.cshtml" />
     <None Include="Views\Account\UnconfirmedAccount.cshtml" />
+    <Content Include="Views\Manage\ChangeProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -305,6 +311,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603230700289_FirstNameRequired.resx">
       <DependentUpon>201603230700289_FirstNameRequired.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603241329373_UserAddress.resx">
+      <DependentUpon>201603241329373_UserAddress.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

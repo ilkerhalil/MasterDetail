@@ -12,11 +12,28 @@
     <h4>Association Form</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <p class="text-info">
-        You've successfully authenticated with <strong>@ViewBag.LoginProvider</strong>.
-        Please enter a user name for this site below and click the Register button to finish
-        logging in.
-    </p>
+    if (ViewData.ModelState.IsValid)
+    {
+        <div class="text-danger bg-warning">
+            <p>If you have alredy registered locally on this site and would like to add an external login to your account,then:</p>
+            <ul>
+                <li>log in locally using your email address and password</li>
+                <li>click your email address at the top of the page</li>
+                <li>click Manage,</li>
+                <li>click the name of external login provider</li>
+            </ul>
+            <p>if you not alredy logged into that provider then you will be prompted to do so.</p>
+            <p>Remember: your password for the external login provider is not necessarily the sama as the login you've registered for you local account</p>
+        </div>  
+    }
+    else
+    {
+        <p class="text-info">
+            You've successfully authenticated with <strong>@ViewBag.LoginProvider</strong>.
+            Please enter a user name for this site below and click the Register button to finish
+            logging in.
+        </p>
+    }
     <div class="form-group">
         @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
