@@ -3,7 +3,7 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace MasterDetail.Models.ModelConfigurations
 {
-    public class WorkOrderConfiguration: EntityTypeConfiguration<WorkOrder>
+    public class WorkOrderConfiguration : EntityTypeConfiguration<WorkOrder>
     {
         public WorkOrderConfiguration()
         {
@@ -13,7 +13,8 @@ namespace MasterDetail.Models.ModelConfigurations
                 .HasPrecision(18, 2)
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
             Property(order => order.CertificationRequirements).HasMaxLength(120).IsOptional();
-
+            HasRequired(wo => wo.CurrentWorker).WithMany(wt=> wt.WorkOrders).WillCascadeOnDelete(false);
+            HasRequired(wo => wo.Customer).WithMany(wt => wt.WorkOrders).WillCascadeOnDelete(false);
 
         }
     }

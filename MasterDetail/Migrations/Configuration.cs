@@ -1,5 +1,3 @@
-using System.IO;
-using System.Web.Security;
 using MasterDetail.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -17,6 +15,12 @@ namespace MasterDetail.Migrations
             //AutomaticMigrationDataLossAllowed = true;
         }
 
+        public void Seed()
+        {
+            Seed(new ApplicationDbContext());
+        }
+
+
         protected override void Seed(MasterDetail.Models.ApplicationDbContext context)
         {
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
@@ -28,6 +32,7 @@ namespace MasterDetail.Migrations
             var password = "Pluralsight#1";
             var firstName = "Admin";
             var roleName = "Admin";
+            var lastName = "Admin";
             var role = roleManager.FindByName(roleName);
             if (role == null)
             {
@@ -37,7 +42,7 @@ namespace MasterDetail.Migrations
             var user = userManager.FindByName(name);
             if (user == null)
             {
-                user = new ApplicationUser() { UserName = name, Email = name, FirstName = firstName };
+                user = new ApplicationUser() { UserName = name, Email = name, FirstName = firstName, LastName = lastName };
                 var result = userManager.Create(user, password);
                 result = userManager.SetLockoutEnabled(user.Id, false);
             }
@@ -65,7 +70,9 @@ namespace MasterDetail.Migrations
             context.WorkOrders.AddOrUpdate(wo => wo.Description, new WorkOrder
             {
                 Description = description,
-                CustomerId = customer.CustomerId
+                CustomerId = customer.CustomerId,
+                CurrentWorkerId = user.Id
+
             });
             context.SaveChanges();
             var workOrder = context.WorkOrders.First(f => f.Description == description);

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace MasterDetail.Models
 {
     public class Customer
@@ -18,6 +20,9 @@ namespace MasterDetail.Models
         public string ZipCode { get; set; }
 
         public string Phone { get; set; }
+
+        public List<WorkOrder> WorkOrders { get; set; }
+
 
 
     }

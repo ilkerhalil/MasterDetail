@@ -176,6 +176,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ApplicationRolesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
@@ -196,6 +197,14 @@
     <Compile Include="Migrations\201603241329373_UserAddress.cs" />
     <Compile Include="Migrations\201603241329373_UserAddress.Designer.cs">
       <DependentUpon>201603241329373_UserAddress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603261650251_IntegratedModel.cs" />
+    <Compile Include="Migrations\201603261650251_IntegratedModel.Designer.cs">
+      <DependentUpon>201603261650251_IntegratedModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603261750413_Cascading.cs" />
+    <Compile Include="Migrations\201603261750413_Cascading.Designer.cs">
+      <DependentUpon>201603261750413_Cascading.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApplicationRole.cs" />
@@ -293,6 +302,11 @@
     <None Include="Views\Account\RegenerateEmailConfiguration.cshtml" />
     <None Include="Views\Account\UnconfirmedAccount.cshtml" />
     <Content Include="Views\Manage\ChangeProfile.cshtml" />
+    <Content Include="Views\ApplicationRoles\Create.cshtml" />
+    <Content Include="Views\ApplicationRoles\Delete.cshtml" />
+    <Content Include="Views\ApplicationRoles\Details.cshtml" />
+    <Content Include="Views\ApplicationRoles\Edit.cshtml" />
+    <Content Include="Views\ApplicationRoles\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -314,6 +328,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603241329373_UserAddress.resx">
       <DependentUpon>201603241329373_UserAddress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603261650251_IntegratedModel.resx">
+      <DependentUpon>201603261650251_IntegratedModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603261750413_Cascading.resx">
+      <DependentUpon>201603261750413_Cascading.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

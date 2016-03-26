@@ -1,4 +1,5 @@
-﻿using System.Security.AccessControl;
+﻿using System.Collections.Generic;
+using System.Security.AccessControl;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -28,6 +29,9 @@ namespace MasterDetail.Models
         public string State { get; set; }
 
         public string ZipCode { get; set; }
+
+
+        public List<WorkOrder> WorkOrders { get; set; }
 
     }
 }

@@ -17,10 +17,11 @@ namespace MasterDetail.Models.ModelConfigurations
                 .HasMaxLength(80)
                 .IsRequired()
                 .HasColumnAnnotation(IndexAnnotation.AnnotationName,
-                    new IndexAnnotation(new IndexAttribute("AK_InventoryItem_InventoryItemName") {IsUnique = true}));
-            Property(item => item.UnitPrice)
-                .HasPrecision(18, 2);
+                    new IndexAnnotation(new IndexAttribute("AK_InventoryItem_InventoryItemName") { IsUnique = true }));
 
+            Property(item => item.UnitPrice).HasPrecision(18, 2);
+
+            HasRequired(ii => ii.Category).WithMany(cat => cat.InventoryItems).WillCascadeOnDelete(false);
 
         }
     }

@@ -1,4 +1,7 @@
-﻿using Microsoft.Owin;
+﻿using System;
+using System.Data.Entity.Validation;
+using MasterDetail.Migrations;
+using Microsoft.Owin;
 using Owin;
 
 [assembly: OwinStartupAttribute(typeof(MasterDetail.Startup))]
@@ -8,6 +11,19 @@ namespace MasterDetail
     {
         public void Configuration(IAppBuilder app)
         {
+            //try
+            //{
+            //    var configuration = new Configuration();
+            //    configuration.Seed();
+            //}
+            //catch (DbEntityValidationException dbEntityValidationException)
+            //{
+            //    foreach (var dbEntityValidationResult in dbEntityValidationException.EntityValidationErrors)
+            //    {
+
+            //    }
+            //}
+
             ConfigureAuth(app);
         }
     }

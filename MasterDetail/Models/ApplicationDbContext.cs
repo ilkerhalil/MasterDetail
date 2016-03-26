@@ -47,5 +47,7 @@ namespace MasterDetail.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<MasterDetail.Models.ApplicationRole> IdentityRoles { get; set; }
     }
 }

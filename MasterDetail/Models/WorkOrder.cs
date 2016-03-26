@@ -24,6 +24,10 @@ namespace MasterDetail.Models
 
         public string CertificationRequirements { get; set; }
 
+        public ApplicationUser CurrentWorker { get; set; }
+
+        public string CurrentWorkerId { get; set; }
+
 
     }
 }
