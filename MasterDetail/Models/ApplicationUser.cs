@@ -2,6 +2,7 @@
 using System.Security.AccessControl;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -30,8 +31,20 @@ namespace MasterDetail.Models
 
         public string ZipCode { get; set; }
 
+        public string FullName => $"{FirstName} {LastName}";
+
+        public string AddressBlock
+        {
+            get
+            {
+                var addressBlock = $"{Address}<br/>{City}, {State} {ZipCode}".Trim();
+                return addressBlock == "<br/>," ? string.Empty : Address;
+            }
+        }
 
         public List<WorkOrder> WorkOrders { get; set; }
+
+        public IEnumerable<SelectListItem> RoleList { get; set; }
 
     }
 }

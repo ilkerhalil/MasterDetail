@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using MasterDetail.Models;
+using MasterDetail.ViewModels;
 using Microsoft.AspNet.Identity.Owin;
 
 namespace MasterDetail.Controllers
 {
+   // [Authorize(Roles = "Admin")]
     public class ApplicationRolesController : Controller
     {
         private ApplicationUserManager _userManager;
@@ -75,10 +74,11 @@ namespace MasterDetail.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Name")] ApplicationRole applicationRole)
+        public async Task<ActionResult> Create([Bind(Include = "Name")] ApplicationRoleViewModel applicationRoleViewModel)
         {
             if (ModelState.IsValid)
             {
+                var applicationRole = new ApplicationRole { Name = applicationRoleViewModel.Name };
                 //db.IdentityRoles.Add(applicationRole);
                 var roleResult = await RoleManager.CreateAsync(applicationRole);
                 if (!roleResult.Succeeded)
@@ -89,7 +89,7 @@ namespace MasterDetail.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(applicationRole);
+            return View();
         }
 
         // GET: ApplicationRoles/Edit/5
@@ -104,6 +104,12 @@ namespace MasterDetail.Controllers
             {
                 return HttpNotFound();
             }
+            var applicationRoleViewModel = new ApplicationRoleViewModel
+            {
+                Id = applicationRole.Id,
+                Name = applicationRole.Name
+            };
+
             return View(applicationRole);
         }
 
@@ -112,27 +118,27 @@ namespace MasterDetail.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name")] ApplicationRole applicationRole)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name")] ApplicationRoleViewModel applicationRoleViewModel)
         {
             if (ModelState.IsValid)
             {
-                var retrievedApplicationRole = await RoleManager.FindByIdAsync(applicationRole.Id);
-                var originalName = retrievedApplicationRole.Name;
-                if (originalName == "Admin" && applicationRole.Name != "Admin")
+                var applicationRole = await RoleManager.FindByIdAsync(applicationRoleViewModel.Id);
+                var originalName = applicationRole.Name;
+                if (originalName == "Admin" && applicationRoleViewModel.Name != "Admin")
                 {
                     ModelState.AddModelError("", "You cannot change the name of the Admin role.");
-                    return View(applicationRole);
+                    return View(applicationRoleViewModel);
                 }
-                if (originalName == "Admin" && applicationRole.Name == "Admin")
+                if (originalName == "Admin" && applicationRoleViewModel.Name == "Admin")
                 {
                     ModelState.AddModelError("", "You cannot change the name of the Admin to role.");
-                    return View(applicationRole);
+                    return View(applicationRoleViewModel);
                 }
-                retrievedApplicationRole.Name = applicationRole.Name;
-                await RoleManager.UpdateAsync(retrievedApplicationRole);
+                applicationRole.Name = applicationRoleViewModel.Name;
+                await RoleManager.UpdateAsync(applicationRole);
                 return RedirectToAction("Index");
             }
-            return View(applicationRole);
+            return View(applicationRoleViewModel);
         }
 
         // GET: ApplicationRoles/Delete/5

@@ -12,6 +12,7 @@ namespace MasterDetail.Models.ModelConfigurations
             Property(user => user.City).HasMaxLength(20).IsOptional();
             Property(user => user.State).HasMaxLength(2).IsOptional();
             Property(user => user.ZipCode).HasMaxLength(10).IsOptional();
+            Ignore(ig => ig.RoleList);
 
         }
     }
