@@ -1,7 +1,4 @@
-﻿using System;
-using System.Data.Entity.Validation;
-using MasterDetail.Migrations;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Owin;
 
 [assembly: OwinStartupAttribute(typeof(MasterDetail.Startup))]

@@ -178,6 +178,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ApplicationRolesController.cs" />
     <Compile Include="Controllers\ApplicationUsersController.cs" />
+    <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
@@ -207,6 +208,10 @@
     <Compile Include="Migrations\201603261750413_Cascading.Designer.cs">
       <DependentUpon>201603261750413_Cascading.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603281639339_Categories.cs" />
+    <Compile Include="Migrations\201603281639339_Categories.Designer.cs">
+      <DependentUpon>201603281639339_Categories.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApplicationRole.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
@@ -234,6 +239,7 @@
     <Compile Include="ViewModels\ApplicationRoleViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\MasterDetail1_log.ldf" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -250,11 +256,15 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Images\AwesomeWomenEmpowered.fw.png" />
+    <Content Include="Images\maryam-mirzakhani.jpg" />
+    <Compile Include="Models\ITreeNodeDotNet3.cs" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-2.2.1.js" />
     <Content Include="Scripts\jquery-2.2.1.min.js" />
     <Content Include="Scripts\jquery-2.2.1.min.map" />
+    <Content Include="App_Data\MasterDetail1" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -311,9 +321,12 @@
     <Content Include="Views\ApplicationRoles\Create.cshtml" />
     <Content Include="Views\ApplicationRoles\Delete.cshtml" />
     <Content Include="Views\ApplicationRoles\Details.cshtml" />
+    <Content Include="Views\Categories\Create.cshtml" />
+    <Content Include="Views\Categories\Delete.cshtml" />
+    <Content Include="Views\Categories\Edit.cshtml" />
+    <Content Include="Views\Categories\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="DataLayer\" />
   </ItemGroup>
   <ItemGroup>
@@ -338,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603261750413_Cascading.resx">
       <DependentUpon>201603261750413_Cascading.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603281639339_Categories.resx">
+      <DependentUpon>201603281639339_Categories.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace MasterDetail.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ApplicationUsersController : Controller
     {
         private ApplicationUserManager _userManager;
@@ -88,6 +89,7 @@ namespace MasterDetail.Controllers
                 var role = await RoleManager.FindByNameAsync("Admin");
                 var isOnlyOneUserAdmin = role.Users.Count == 1;
 
+                applicationUser = await UserManager.FindByIdAsync(applicationUser.Id);
                 applicationUser.RoleList = RoleManager.Roles.ToList().Select(s => new SelectListItem
                 {
                     Selected = rolesCurrentlyPersistedForUser.Contains(s.Name),
@@ -101,7 +103,7 @@ namespace MasterDetail.Controllers
                     return View(applicationUser);
                 }
 
-                applicationUser = await UserManager.FindByIdAsync(applicationUser.Id);
+               
 
                 var result = await UserManager.AddToRolesAsync(applicationUser.Id, rolesSelectedOnView.Except(rolesCurrentlyPersistedForUser).ToArray());
 
