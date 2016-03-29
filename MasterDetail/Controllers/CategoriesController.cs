@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Web.Mvc;
 using MasterDetail.Models;
+using MasterDetail.ViewModels;
 using TreeUtility;
 
 namespace MasterDetail.Controllers
@@ -26,8 +29,10 @@ namespace MasterDetail.Controllers
         private string EnumerateNodes(Category parent)
         {
             var content = "";
-            content += "<li>";
+            content += "<li  class=\"treenode\">";
             content += parent.CategoryName;
+            content += $"<a href=\"/Categories/Edit/{parent.Id}\" class=\"btn btn-primary btn-xs treenodeeditbutton\">Edit</a>";
+            content += $"<a href=\"/Categories/Delete/{parent.Id}\" class=\"btn btn-danger btn-xs treenodeeditbutton\">Delete</a>";
             if (parent.Children.Count == 0)
                 content += "</li>";
             else
@@ -69,10 +74,46 @@ namespace MasterDetail.Controllers
             return categories;
         }
 
+        void ValidateParentsAreParentless(Category category)
+        {
+            if (category.ParentCategoryId == null)
+                return;
+            var parentCategory = _applicationDbContext.Categories.Find(category.ParentCategoryId);
+            if (parentCategory.ParentCategoryId != null)
+                throw new InvalidOperationException("You cannot nest this category more");
+            var numberOfChildren = _applicationDbContext.Categories.Count(c => c.ParentCategoryId == category.Id);
+            if (numberOfChildren > 0)
+                throw new InvalidOperationException("You cannot nest this category's children more than two levels deep.");
+        }
+
+        private SelectList PopulateParentCategorySelectList(int? categoryId)
+        {
+            SelectList selectList;
+            if (categoryId == null)
+            {
+                selectList = new SelectList(_applicationDbContext.Categories.Where(w => w.ParentCategoryId == null), "Id", "CategoryName");
+            }
+            else if (_applicationDbContext.Categories.Count(c => c.ParentCategoryId == categoryId) == 0)
+            {
+                selectList =
+                    new SelectList(
+                        _applicationDbContext.Categories.Where(w => w.ParentCategoryId == null && w.Id != categoryId),
+                        "Id", "CategoryName");
+            }
+            else
+            {
+                selectList = new SelectList(_applicationDbContext.Categories.Where(w => false), "Id", "CategoryName");
+            }
+            return selectList;
+        }
+
+
+
 
         // GET: Categories/Create
         public ActionResult Create()
         {
+            ViewBag.ParentCategoryIdSelectList = PopulateParentCategorySelectList(null);
             return View();
         }
 
@@ -85,6 +126,18 @@ namespace MasterDetail.Controllers
         {
             if (ModelState.IsValid)
             {
+                try
+                {
+                    ValidateParentsAreParentless(category);
+
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError("", exception.Message);
+                    ViewBag.ParentCategoryIdSelectList = PopulateParentCategorySelectList(null);
+                    return View(category);
+                }
+
                 _applicationDbContext.Categories.Add(category);
                 await _applicationDbContext.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -100,12 +153,20 @@ namespace MasterDetail.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = await _applicationDbContext.Categories.FindAsync(id);
+            var category = await _applicationDbContext.Categories.FindAsync(id);
             if (category == null)
             {
                 return HttpNotFound();
             }
-            return View(category);
+            var categoryViewModel = new CategoryViewModel
+            {
+                Id = category.Id,
+                ParentCategoryId = category.ParentCategoryId,
+                CategoryName = category.CategoryName
+            };
+
+            ViewBag.ParentCategoryIdSelectList = PopulateParentCategorySelectList(id);
+            return View(categoryViewModel);
         }
 
         // POST: Categories/Edit/5
@@ -113,15 +174,38 @@ namespace MasterDetail.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,ParentCategoryId,CategoryName")] Category category)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,ParentCategoryId,CategoryName")] CategoryViewModel categoryViewModel)
         {
             if (ModelState.IsValid)
             {
-                _applicationDbContext.Entry(category).State = EntityState.Modified;
+                var editedCategory = new Category();
+                try
+                {
+                    editedCategory.Id = categoryViewModel.Id;
+                    editedCategory.ParentCategoryId = categoryViewModel.ParentCategoryId;
+                    editedCategory.CategoryName = categoryViewModel.CategoryName;
+                    ValidateParentsAreParentless(editedCategory);
+                }
+                catch (Exception exception)
+                {
+
+                    ModelState.AddModelError("", exception.Message);
+                    ViewBag.ParentCategoryIdSelectList = PopulateParentCategorySelectList(categoryViewModel.Id);
+                    return View("Edit", categoryViewModel);
+                }
+
+                _applicationDbContext.Entry(editedCategory).State = EntityState.Modified;
                 await _applicationDbContext.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(category);
+            //var categoryViewModel = new CategoryViewModel
+            //{
+            //    Id = category.Id,
+            //    ParentCategoryId = category.ParentCategoryId,
+            //    CategoryName = category.CategoryName
+            //};
+            ViewBag.ParentCategoryIdSelectList = new SelectList(_applicationDbContext.Categories, "Id", "CategoryName");
+            return View(categoryViewModel);
         }
 
         // GET: Categories/Delete/5
@@ -131,7 +215,7 @@ namespace MasterDetail.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = await _applicationDbContext.Categories.FindAsync(id);
+            var category = await _applicationDbContext.Categories.FindAsync(id);
             if (category == null)
             {
                 return HttpNotFound();
@@ -144,10 +228,25 @@ namespace MasterDetail.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Category category = await _applicationDbContext.Categories.FindAsync(id);
-            _applicationDbContext.Categories.Remove(category);
-            await _applicationDbContext.SaveChangesAsync();
-            return RedirectToAction("Index");
+            var category = await _applicationDbContext.Categories.FindAsync(id);
+            try
+            {
+                _applicationDbContext.Categories.Remove(category);
+                await _applicationDbContext.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch (DbUpdateException exception)
+            {
+                ModelState.AddModelError("", "You attempted to delete a category that had child categories associated with it.");
+            }
+            catch (Exception exception)
+            {
+
+                ModelState.AddModelError("", exception.Message);
+            }
+            return View("Delete", category);
+
+
         }
 
         protected override void Dispose(bool disposing)

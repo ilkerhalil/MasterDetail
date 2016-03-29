@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity.Core.Mapping;
-using TreeUtility;
+using MasterDetail.Models;
 
-namespace MasterDetail.Models
+namespace MasterDetail.ViewModels
 {
-    public class Category : ITreeNode<Category>
+    public class CategoryViewModel
     {
         private int? _parentCategoryId;
         public int Id { get; set; }
